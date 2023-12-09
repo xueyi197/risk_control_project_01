@@ -1,0 +1,261 @@
+ {
+  "action": {
+    "expressions": [
+      {
+         "key": "importrequests",
+         "expression": "exec('import requests')",
+         "describe": "导入requests模块"
+      },
+      {
+         "key": "importjson",
+         "expression": "exec('import json')",
+         "describe": "导入json模块"
+      },
+      {
+         "key": "importUtils",
+         "expression": "exec('import utils')",
+         "describe": "导入utils模块"
+      },    
+    
+      {
+          "key": "n",
+          "expression": "\"001\"",
+          "describe": "尝试次数"
+      },      
+      {
+          "key": "black_ip",
+          "expression": "utils.get_black_ip()",
+          "describe": "获取黑ip"
+      },
+      {
+          "key": "black_ua",
+          "expression": "utils.get_black_ua()",
+          "describe": "获取黑ip"
+      },
+      {
+        "key": "ip_abnormal",
+        "expression": "ip in black_ip",
+        "describe": "ip"
+      },
+      {
+        "key": "ua_abnormal",
+        "expression": "user_agent in black_ua",
+        "describe": "user_agent"
+      },
+      {
+        "key": "ip_path_1h",
+        "expression": "utils.redis_number('action:set:' + n + ':' + ftime[:13] + ip, path)",
+        "describe": "ip_path_1h"
+      },
+      {
+        "key": "ip_path_1d",
+        "expression": "utils.redis_number('action:set:' + n  + ':' + ftime[:10] + ip, path)",
+        "describe": "ip_path_1d"
+      },
+      {
+        "key": "ip_path_cnt_1h",
+        "expression": "utils.quchongshu('action:set:' + n  + ':' + ftime[:13] + ip)",
+        "describe": "ip_path_cnt_1h"
+      },
+      {
+        "key": "ip_path_cnt_1d",
+        "expression": "utils.quchongshu('action:set:' + n + ':' + ftime[:10] + ip)",
+        "describe": "ip_path_cnt_1d"
+      },
+      {
+        "key": "ip_path",
+        "expression": "utils.set_redis('action:string:' + n + ':' +ip,path)",
+        "describe": "ip_path"
+      }, 
+      {
+        "key": "ip_late_path",
+        "expression": "utils.get_redis('action:string:' + n + ':' +ip)",
+        "describe": "ip_late_path"
+      }, 
+      {
+        "key": "ua_ip_1h",
+        "expression": "utils.redis_number('action:set:' + n + ':' + ftime[:13] + user_agent, ip)",
+        "describe": "ua_ip_1h"
+      },
+      {
+        "key": "ua_ip_cnt_1h",
+        "expression": "utils.quchongshu('action:set:' + n + ':' + ftime[:13] + user_agent)",
+        "describe": "ua_ip_cnt_1h"
+      },
+      {
+        "key": "ua_ip_cnt_1h",
+        "expression": "utils.quchongshu('action:set:' + n + ':' + ftime[:13] + user_agent)",
+        "describe": "ua_ip_cnt_1h"
+      },  
+      {
+        "key": "ip_1m",
+        "expression": "utils.redis_cnt('action:cnt:' + n + ':' + ftime[:16] + ip)",
+        "describe": "ip_1m_cnt"
+      },
+      {
+        "key": "ip_1h",
+        "expression": "utils.redis_cnt('action:cnt:' + n + ':' + ftime[:13] + ip)",
+        "describe": "ip_1h_cnt"
+      },
+      {
+        "key": "ip_1d",
+        "expression": "utils.redis_cnt('action:cnt:' + n + ':' + ftime[:10] + ip)",
+        "describe": "ip_1d_cnt"
+      },
+      {
+        "key": "ip_1m_abnormal",
+        "expression": "int(ip_1m) > 50",
+        "describe": "ip_1m_cnt"
+      },
+      {
+        "key": "ip_1h_abnormal",
+        "expression": "int(ip_1h) > 100",
+        "describe": "ip_1h_cnt"
+      },
+      {
+        "key": "ip_1d_abnormal",
+        "expression": "int(ip_1d) > 5000",
+        "describe": "ip_1d_cnt"
+      },
+      {
+        "key": "ua_1m",
+        "expression": "utils.redis_cnt('action:cnt:' + n + ':' + ftime[:16] + user_agent)",
+        "describe": "ua_1m_cnt"
+      },
+      {
+        "key": "ua_1h",
+        "expression": "utils.redis_cnt('action:cnt:' + n + ':' + ftime[:13] + user_agent)",
+        "describe": "ua_1h_cnt"
+      },
+      {
+        "key": "ua_1d",
+        "expression": "utils.redis_cnt('action:cnt:' + n + ':' + ftime[:10] + user_agent)",
+        "describe": "ua_1d_cnt"
+      },
+      {
+        "key": "ua_1m_abnormal",
+        "expression": "int(ua_1m) > 5000",
+        "describe": "ua_1m_cnt"
+      },
+      {
+        "key": "ua_1h_abnormal",
+        "expression": "int(ua_1h) > 10000",
+        "describe": "ua_1h_cnt"
+      },
+      {
+        "key": "ua_1d_abnormal",
+        "expression": "int(ua_1d) > 50000",
+        "describe": "ua_1d_cnt"
+      },
+      {
+        "key": "model_pro",
+        "expression": "requests.post(url = 'http://local/my_model', data ={'data': json.dumps({'ip_path_1h': ip_path_1h,'ip_path_1d': ip_path_1d,'ip_path_cnt_1h': ip_path_cnt_1h,'ip_path_cnt_1d': ip_path_cnt_1d,'ua_ip_1h': ua_ip_1h,'ua_ip_cnt_1h': ua_ip_cnt_1h,'ip_1m': ip_1m,'ip_1h': ip_1h,'ip_1d': ip_1d,'ua_1m': ua_1m,'ua_1h': ua_1h,'ua_1d': ua_1d})}).text",
+        "describe": "model_pro"
+      },
+      {
+        "key": "model_pro_abnormal",
+        "expression": "int(model_pro) == 1",
+        "describe": "model_pro_abnormal"
+      }        
+    ],
+    "rules": [
+      {
+        "name": "is_ip_abnormal",
+        "describe": "命中ip异常",
+        "rule": "ip_abnormal == True",
+        "code": 1001,
+        "model": "dark"
+      },
+      {
+        "name": "is_ua_abnormal",
+        "describe": "命中ua异常",
+        "rule": "ua_abnormal == True",
+        "code": 1002,
+        "model": "dark"
+      }
+     ]
+  },
+  "searchCnt" : {
+      "expressions": [
+      {
+         "key": "importrequests",
+         "expression": "exec('import requests')",
+         "describe": "导入requests模块"
+      },
+      {
+         "key": "importjson",
+         "expression": "exec('import json')",
+         "describe": "导入json模块"
+      },
+      {
+         "key": "importUtils",
+         "expression": "exec('import utils')",
+         "describe": "导入utils模块"
+      },    
+    
+      {
+          "key": "n",
+          "expression": "\"001\"",
+          "describe": "尝试次数"
+      },
+      {
+          "key": "record_ip_cnt",
+          "expression": "utils.redis_cnt('searchCnt:cnt:' + n + ':' + ip)",
+          "describe": "记录IP时间"
+      }         
+    ],
+    "rules": [
+      {
+        "name": "test1_abnormal",
+        "describe": "测试",
+        "rule": "False",
+        "code": 1001,
+        "model": "dark"
+      }
+     ]
+  },
+  "search" : {
+      "expressions": [
+      {
+         "key": "importrequests",
+         "expression": "exec('import requests')",
+         "describe": "导入requests模块"
+      },
+      {
+         "key": "importjson",
+         "expression": "exec('import json')",
+         "describe": "导入json模块"
+      },
+      {
+         "key": "importUtils",
+         "expression": "exec('import utils')",
+         "describe": "导入utils模块"
+      },    
+    
+      {
+          "key": "n",
+          "expression": "\"001\"",
+          "describe": "尝试次数"
+      },
+      {
+          "key": "get_ip_cnt",
+          "expression": "utils.get_redis('searchSug:cnt:' + n + ':' + ip)",
+          "describe": "查看记录是否存在"
+      },
+      {
+          "key": "ip_cnt_abnormal",
+          "expression": "get_ip_cnt is None or int(get_ip_cnt) <= 0",
+          "describe": "ip_cnt_abnormal"
+      }          
+    ],
+    "rules": [
+      {
+        "name": "path_abnormal",
+        "describe": "path",
+        "rule": "ip_cnt_abnormal == True",
+        "code": 1001,
+        "model": "dark"
+      }
+     ]
+  }
+}
