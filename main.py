@@ -66,16 +66,21 @@ def g_engine(config):
 @app.route('/my_eval', methods=['POST'])
 def my_eval():
     global client
-    data = request.form['data']  # 获取POST请求中的data参数
+    # 获取POST请求中的data参数
+    data = request.form['data']
+    #获取规则配置
     config = g_config()
+    #配置规则引擎
     engine = g_engine(config)
     res = engine.eval_expressions_rules(data)
     str_res = str(res)
+    #生成日志
     logging.warning('res:{}'.format(str_res))
     sql = """
     insert into risk_control_log(res) VALUES('{}')
     """
     sql = sql.format(str_res)
+    #将日志保存在clickhouse中
     client.execute(sql)  
     return res
 

@@ -12,11 +12,14 @@ class EvalService:
         self.rules_config = rules_config
         self.my_redis = StrictRedis(host='redis.com', port=26332, decode_responses=True, password='***')
 
-        
+    
+    #读取并运行规则
     def eval_expressions_rules(self, params_json):
+        #编码为utf-8
         params_utf8 = params_json.encode('utf-8')
         expression_failure = []
         counter_failure = []
+        #将json读取为字典
         try:
             features = json.loads(params_utf8)
         except Exception as e:
@@ -27,6 +30,7 @@ class EvalService:
         expressions = self.rules_config.get(activity).get('expressions')
         rules = self.rules_config.get(activity).get('rules')
         context_tmp = copy.deepcopy(features)
+        #获取counter_read中的数据，并根据my_type来运行
         for counter in counter_read:
             try:
                 key = counter.get('key')
@@ -34,22 +38,27 @@ class EvalService:
                 redis_key = counter.get('redis_key')
                 if counter.get('redis_key2') != None:
                     redis_key2 = counter.get('redis_key2')
+                #访问次数
                 if my_type == 'redis_cnt':
                     context_tmp[key] = int(self.my_redis.incr(eval(redis_key.encode('utf-8'), context_tmp)))
+                #添加set数据
                 elif my_type == 'redis_number':
                     context_tmp[key] = self.my_redis.sadd(eval(redis_key.encode('utf-8'), context_tmp),eval(redis_key2.encode('utf-8'), context_tmp))
+                #返回去重元素
                 elif my_type == 'quchongshu':
                     context_tmp[key] = len(self.my_redis.smembers(eval(redis_key.encode('utf-8'), context_tmp)))
+                #添加string数据
                 elif my_type == 'set_redis':
                     context_tmp[key] = self.my_redis.set(eval(redis_key.encode('utf-8'), context_tmp),eval(redis_key2.encode('utf-8'), context_tmp))
+                #获取string数据
                 elif my_type == 'get_redis':
                     context_tmp[key] = self.my_redis.get(eval(redis_key.encode('utf-8'), context_tmp))
-
                 features[key] = context_tmp[key]
             except Exception as e:
                 logging.warning(str(e))
                 counter_failure.append('{key}:{my_type} '.format(key=key, my_type=my_type))
         features['counter_failure'] = counter_failure
+        #获取expressions的key和expression，并且运行
         for item in expressions:
             try:
                 key = item['key']
@@ -69,6 +78,7 @@ class EvalService:
         policies = []
         marks = []
         risk_rate = []
+        #获取rules
         for rule in rules:
             describe = rule.get('describe')
             mode = rule.get('mode')
@@ -83,6 +93,7 @@ class EvalService:
             except Exception as e:
                 logging.warning(str(e))
                 rule_failure.append(str(rule))
+            #分为production、dark和test三种模式，方便调试
             if is_hit:
                 if mode == 'production':
                     production_policies.append(code)
