@@ -3,10 +3,8 @@ import json
 
 
 if __name__ == '__main__':
-
-    url = "***"
+    url = "http://local:5000/my_eval"
     data = {'activity': 'test', 'ua_cnt': 4}
     post_data = {'data': json.dumps(data)}
     a = requests.post(url=url, data=post_data)
     print(a.text)
-    
